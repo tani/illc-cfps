@@ -2,12 +2,16 @@ import superagent from "superagent"
 import cheerio from "cheerio"
 import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat.js"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
 import ics from "ics"
 import { promisify } from "util"
 import { writeFile } from "fs/promises"
 import ejs from "ejs"
 
 dayjs.extend(customParseFormat)
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 try {
     const res = await superagent.get("https://www.illc.uva.nl/NewsandEvents/Events/Conferences/")
@@ -24,7 +28,7 @@ try {
                 .first()
                 .text()
                 .replace(/Deadline:\s*[a-zA-Z]+\s*/, '')
-        const _deadline = dayjs(deadline_src, "D MMMM YYYY")
+        const _deadline = dayjs(deadline_src, "D MMMM YYYY").utcOffset(-12*60)
         const start = _deadline.format("YYYY-M-D-H-m").split("-")
         const description = $(".description", li).text()
         return {
