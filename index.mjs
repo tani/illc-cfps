@@ -40,14 +40,14 @@ try {
         }
     }).toArray()
     const html = await ejs.renderFile("index.ejs", { events })
-    writeFile("index.html", html)
+    writeFile("build/index.html", html)
     events.forEach(event => {
         delete event._start
         delete event._end
         delete event._deadline
     })
     const deadlines = await promisify(ics.createEvents)(events)
-    writeFile("deadlines.ics", deadlines, "utf-8")
+    writeFile("build/deadlines.ics", deadlines, "utf-8")
 } catch (err) {
     console.error(err)
     process.exit(1)
