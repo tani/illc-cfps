@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.mjs",
   "scripts": {
-    "build": "node index.mjs"
+    "build": "mkdir build && node index.mjs"
   },
   "author": "TANIGUCHI Masaya",
   "license": "MIT",
