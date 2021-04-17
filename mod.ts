@@ -1,37 +1,30 @@
-import dayjs from "https://esm.sh/dayjs@v1.10.4"
-import customParseFormat from "https://esm.sh/dayjs@v1.10.4/plugin/customParseFormat.js"
-import utc from "https://esm.sh/dayjs@v1.10.4/plugin/utc.js"
-import timezone from "https://esm.sh/dayjs@v1.10.4/plugin/timezone.js"
-import ics from "https://esm.sh/ics?no-check"
+/// <reference path="./deployctl.d.ts" />
 
-import { promisify } from "https://deno.land/std@0.93.0/node/util.ts"
-import cheerio from "https://deno.land/x/cheerio@1.0.2/mod.ts"
-
-dayjs.extend(customParseFormat)
-dayjs.extend(utc)
-dayjs.extend(timezone)
+import * as ics from "https://esm.sh/ics@2.27.0"
+import { DateTime } from "https://esm.sh/luxon@1.26.0";
+import { cheerio } from "https://deno.land/x/cheerio@1.0.2/mod.ts"
 
 const res = await fetch("https://www.illc.uva.nl/NewsandEvents/Events/Conferences/")
 const $ = cheerio.load(await res.text())
 const events = $("#pagecontents > div > section > section:nth-child(9) .vevent").map((_, li) => {
     const title = $("h4", li).text()
     const uid = "taniguchi.masaya" + $(".uid", li).attr("href")
-    const _start = dayjs($(".dtstart", li).attr("title"), "YYYY-MM-DD")
-    const _end = dayjs($(".dtend", li).attr("title"), "YYYY-MM-DD")
+    const _start = DateTime.fromFormat($(".dtstart", li).attr("title") || "", "yyyy-MM-dd")
+    const _end = DateTime.fromFormat($(".dtend", li).attr("title") || "", "yyyy-MM-dd")
     const location = $(".location", li).text().replace(/Location:\s*/, '')
-    const deadline_src = 
+    const deadlineSrc = 
         $("div", li)
             .filter((_, div)=>$(div).text().search(/Deadline:/) >= 0)
             .first()
             .text()
             .replace(/Deadline:\s*[a-zA-Z]+\s*/, '')
-    const _deadline = dayjs(deadline_src, "D MMMM YYYY").utcOffset(-12*60)
-    const start = _deadline.format("YYYY-M-D-H-m").split("-")
+    const _deadline = DateTime.fromFormat(deadlineSrc, "d MMMM yyyy").setZone('Asia/Tokyo')
+    const start = _deadline.toFormat("yyyy-M-d-H-m").split("-")
     const description = $(".description", li).text()
     return {
-        _start: _start.isValid() ? _start.format("D MMMM YYYY") : "",
-        _end: _end.isValid() ? _end.format("D MMMM YYYY") : "",
-        _deadline: _deadline.isValid() ? _deadline.format("D MMMM YYYY") : "",
+        _start: _start.isValid ? _start.toFormat("d MMMM yyyyy") : "",
+        _end: _end.isValid ? _end.toFormat("d MMMM yyyy") : "",
+        _deadline: _deadline.isValid ? _deadline.toFormat("d MMMM yyyy") : "",
         start,
         duration: { hours: 24 },
         uid,
@@ -40,9 +33,12 @@ const events = $("#pagecontents > div > section > section:nth-child(9) .vevent")
         location,
     }
 }).toArray()
-events.forEach(event => {
+
+events.forEach((event: any) => {
     delete event._start
     delete event._end
     delete event._deadline
 })
-const deadlines = await promisify(ics.createEvents)(events)
+
+const deadlines = ics.createEvents(events as any)
+console.log(deadlines)
