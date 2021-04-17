@@ -116,8 +116,5 @@ dist
 .pnp.*
 
 # User
-.vscode
-.metals
-.clj-kondo
 **/*.ics
 **/*.html
