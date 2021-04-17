@@ -2,7 +2,7 @@
 
 import * as ics from "https://esm.sh/ics@2.27.0"
 import { DateTime } from "https://esm.sh/luxon@1.26.0";
-import { cheerio } from "https://deno.land/x/cheerio@1.0.2/mod.ts"
+import * as cheerio from "https://esm.sh/cheerio@1.0.0-rc.6"
 
 const res = await fetch("https://www.illc.uva.nl/NewsandEvents/Events/Conferences/")
 const $ = cheerio.load(await res.text())
