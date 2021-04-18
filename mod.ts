@@ -6,10 +6,13 @@ import { cheerio } from "https://deno.land/x/cheerio@1.0.4/mod.ts";
 import * as dejs from "https://deno.land/x/dejs@0.9.3/mod.ts";
 
 async function GenerateCalendar() {
+  console.log("OK1")
   const res = await fetch(
     "https://www.illc.uva.nl/NewsandEvents/Events/Conferences/",
   );
+  console.log("OK2")
   const $ = cheerio.load(await res.text());
+  console.log("OK3")
   const events = $(
     "#pagecontents > div > section > section:nth-child(9) .vevent",
   ).map((_, li) => {
@@ -46,14 +49,17 @@ async function GenerateCalendar() {
       location,
     };
   }).toArray();
+  console.log("OK4")
   const template = await (await fetch(new URL("index.ejs", import.meta.url)))
     .text();
+  console.log("OK5")
   const html = await dejs.renderToString(template, { events });
   events.forEach((event: any) => {
     delete event._start;
     delete event._end;
     delete event._deadline;
   });
+  console.log("OK6")
   return { html, ...ics.createEvents(events as any) };
 }
 
