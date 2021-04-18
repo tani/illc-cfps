@@ -1,7 +1,7 @@
 /// <reference path="./deployctl.d.ts" />
 import * as ics from "https://esm.sh/ics@2.27.0";
 import { DateTime } from "https://esm.sh/luxon@1.26.0";
-import _ from "https://esm.sh/lodash-es@4.17.21";
+import * as mustache from "https://deno.land/x/mustache@v0.3.0/mod.ts";
 import { cheerio } from "https://deno.land/x/cheerio@1.0.4/mod.ts";
 
 async function GenerateCalendar() {
@@ -45,10 +45,9 @@ async function GenerateCalendar() {
       location,
     };
   }).toArray();
-  const template = await (await fetch(new URL("index.ejs", import.meta.url)))
+  const template = await (await fetch(new URL("index.mustache", import.meta.url)))
     .text();
-    
-  const html = _.template(template)({ events })
+  const html = mustache.render(template, { events })
   events.forEach((event: any) => {
     delete event._start;
     delete event._end;

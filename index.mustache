@@ -24,15 +24,15 @@
             <th>Description</th>
         </thead>
         <tbody>
-            <% for (event of events) { %>
+            {{#events}}
                 <tr>
-                    <td><%- event._deadline %></td>
-                    <td><%- event._start %></td>
-                    <td><%- event._end %></td>
-                    <td><%- event.title %></td>
-                    <td><%- event.description %></td>
+                    <td>{{ _deadline }}</td>
+                    <td>{{ _start }}</td>
+                    <td>{{ _end }}</td>
+                    <td>{{ title }}</td>
+                    <td>{{ description }}</td>
                 </tr>
-            <% } %>
+            {{/events}}
         </tbody>
     </table>
 </body>
