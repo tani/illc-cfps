@@ -6,13 +6,10 @@ import { cheerio } from "https://deno.land/x/cheerio@1.0.4/mod.ts";
 import * as dejs from "https://deno.land/x/dejs@0.9.3/mod.ts";
 
 async function GenerateCalendar() {
-  console.error("OK1")
   const res = await fetch(
     "https://www.illc.uva.nl/NewsandEvents/Events/Conferences/",
   );
-  console.error("OK2")
   const $ = cheerio.load(await res.text());
-  console.error("OK3")
   const events = $(
     "#pagecontents > div > section > section:nth-child(9) .vevent",
   ).map((_, li) => {
@@ -49,23 +46,21 @@ async function GenerateCalendar() {
       location,
     };
   }).toArray();
-  console.error("OK4")
   const template = await (await fetch(new URL("index.ejs", import.meta.url)))
     .text();
-  console.error("OK5")
   const html = await dejs.renderToString(template, { events });
   events.forEach((event: any) => {
     delete event._start;
     delete event._end;
     delete event._deadline;
   });
-  console.error("OK6")
   return { html, ...ics.createEvents(events as any) };
 }
 
 self.addEventListener("fetch", async (event) => {
   const result = await GenerateCalendar();
-  if (new URL(event.request.url).pathname.startsWith("/deadlines.ics")) {
+  const url = new URL(event.request.url);
+  if (url.pathname.startsWith("/deadlines.ics")) {
     const body = result.value;
     event.respondWith(
       new Response(
