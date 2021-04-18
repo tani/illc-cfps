@@ -1,8 +1,8 @@
 /// <reference path="./deployctl.d.ts" />
 import * as ics from "https://esm.sh/ics@2.27.0";
 import { DateTime } from "https://esm.sh/luxon@1.26.0";
+import ejs from "https://esm.sh/ejs@3.1.6";
 import { cheerio } from "https://deno.land/x/cheerio@1.0.4/mod.ts";
-import * as dejs from "https://deno.land/x/dejs@0.9.3/mod.ts";
 
 async function GenerateCalendar() {
   const res = await fetch(
@@ -47,7 +47,8 @@ async function GenerateCalendar() {
   }).toArray();
   const template = await (await fetch(new URL("index.ejs", import.meta.url)))
     .text();
-  const html = await dejs.renderToString(template, { events });
+    
+  const html = ejs.render(template, { events })
   events.forEach((event: any) => {
     delete event._start;
     delete event._end;
@@ -57,15 +58,6 @@ async function GenerateCalendar() {
 }
 
 self.addEventListener("fetch", async (event) => {
-    event.respondWith(
-        new Response("hello", {
-            status: 200,
-            headers: {
-                "Content-Type": "text/plain"
-            }
-        })
-    )
-    return
   const result = await GenerateCalendar();
   const url = new URL(event.request.url);
   if (url.pathname.startsWith("/deadlines.ics")) {
