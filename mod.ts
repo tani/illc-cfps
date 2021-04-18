@@ -57,6 +57,15 @@ async function GenerateCalendar() {
 }
 
 self.addEventListener("fetch", async (event) => {
+    event.respondWith(
+        new Response("hello", {
+            status: 200,
+            headers: {
+                "Content-Type": "text/plain"
+            }
+        })
+    )
+    return
   const result = await GenerateCalendar();
   const url = new URL(event.request.url);
   if (url.pathname.startsWith("/deadlines.ics")) {
