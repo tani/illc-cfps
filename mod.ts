@@ -1,7 +1,7 @@
 /// <reference path="./deployctl.d.ts" />
 import * as ics from "https://esm.sh/ics@2.27.0";
 import { DateTime } from "https://esm.sh/luxon@1.26.0";
-import ejs from "https://esm.sh/ejs@3.1.6";
+import _ from "https://esm.sh/lodash-es@4.17.21";
 import { cheerio } from "https://deno.land/x/cheerio@1.0.4/mod.ts";
 
 async function GenerateCalendar() {
@@ -48,7 +48,7 @@ async function GenerateCalendar() {
   const template = await (await fetch(new URL("index.ejs", import.meta.url)))
     .text();
     
-  const html = ejs.render(template, { events })
+  const html = _.template(template)({ events })
   events.forEach((event: any) => {
     delete event._start;
     delete event._end;
