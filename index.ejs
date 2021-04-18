@@ -24,7 +24,7 @@
             <th>Description</th>
         </thead>
         <tbody>
-            <% events.forEach((event) => { %>
+            <% for (event of events) { %>
                 <tr>
                     <td><%- event._deadline %></td>
                     <td><%- event._start %></td>
@@ -32,7 +32,7 @@
                     <td><%- event.title %></td>
                     <td><%- event.description %></td>
                 </tr>
-            <% }) %>
+            <% } %>
         </tbody>
     </table>
 </body>
