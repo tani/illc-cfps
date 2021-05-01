@@ -34,7 +34,7 @@ async function GenerateCalendar() {
     const start = _deadline.toFormat("yyyy-M-d-H-m").split("-");
     const description = $(".description", li).text();
     return {
-      _start: _start.isValid ? _start.toFormat("d MMMM yyyyy") : "",
+      _start: _start.isValid ? _start.toFormat("d MMMM yyyy") : "",
       _end: _end.isValid ? _end.toFormat("d MMMM yyyy") : "",
       _deadline: _deadline.isValid ? _deadline.toFormat("d MMMM yyyy") : "",
       start,
